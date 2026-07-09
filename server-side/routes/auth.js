@@ -238,5 +238,88 @@ router.post("/verify-otp", (req, res) => {
     });
 
 });
+router.post("/login", async (req, res) => {
 
+    try {
+
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and Password are required."
+            });
+        }
+
+        const query = "SELECT * FROM users WHERE email=?";
+
+        db.query(query, [email], async (err, result) => {
+
+            if (err)
+                return res.status(500).json(err);
+
+            if (result.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found."
+                });
+            }
+
+            const user = result[0];
+
+            // Email verified?
+            if (!user.is_verified) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Please verify your email first."
+                });
+            }
+
+            // Compare Password
+            const isMatch = await bcrypt.compare(password, user.password);
+
+            if (!isMatch) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Incorrect Password."
+                });
+            }
+            const token = jwt.sign(
+                {
+                    user_id: user.user_id,
+                    email: user.email
+                },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn: "7d"
+                }
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Login Successful.",
+                token,
+                user: {
+                    user_id: user.user_id,
+                    username: user.username,
+                    email: user.email
+                }
+            });
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+
+});
 module.exports = router;
