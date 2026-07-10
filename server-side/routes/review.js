@@ -3,7 +3,6 @@ const db = require("../config/db");
 const router = express.Router();
 const middleware = require("../middleware/authmiddle");
 router.post("/add", middleware, (req, res) => {
-
     const user_id = req.user.user_id;
 
     const { product_id, rating, review } = req.body;
@@ -16,7 +15,6 @@ router.post("/add", middleware, (req, res) => {
         });
 
     }
-
     const checkQuery =
         "SELECT * FROM reviews WHERE user_id=? AND product_id=?";
 
@@ -161,3 +159,4 @@ router.delete("/:id", middleware, (req, res) => {
     });
 
 });
+module.exports = router;

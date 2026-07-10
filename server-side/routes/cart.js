@@ -107,7 +107,7 @@ router.post("/add", middleware , (req, res) => {
     });
 
 });
-router.get("/", verifyToken, (req, res) => {
+router.get("/", middleware, (req, res) => {
 
     const user_id = req.user.user_id;
 
@@ -143,7 +143,7 @@ router.get("/", verifyToken, (req, res) => {
     });
 
 });
-router.delete("/remove/:id", verifyToken, (req, res) => {
+router.delete("/remove/:id", middleware, (req, res) => {
 
     const user_id = req.user.user_id;
     const cart_id = req.params.id;
@@ -175,7 +175,7 @@ router.delete("/remove/:id", verifyToken, (req, res) => {
     });
 
 });
-router.delete("/clear", verifyToken, (req, res) => {
+router.delete("/clear", middleware, (req, res) => {
 
     const user_id = req.user.user_id;
 
@@ -197,3 +197,4 @@ router.delete("/clear", verifyToken, (req, res) => {
     });
 
 });
+module.exports = router;

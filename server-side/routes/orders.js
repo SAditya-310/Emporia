@@ -120,10 +120,29 @@ router.get("/", middleware, (req, res) => {
     const user_id = req.user.user_id;
 
     const query = `
-        SELECT *
-        FROM orders
-        WHERE user_id=?
-        ORDER BY created_at DESC
+        SELECT
+    o.order_id,
+    o.created_at,
+    o.total_amount,
+    o.payment_status,
+    o.order_status,
+    oi.quantity,
+
+    GROUP_CONCAT(p.name SEPARATOR ', ') AS products
+
+FROM orders o
+
+JOIN order_items oi
+ON o.order_id = oi.order_id
+
+JOIN products p
+ON oi.product_id = p.product_id
+
+WHERE o.user_id = ?
+
+GROUP BY o.order_id
+
+ORDER BY o.created_at DESC;
     `;
 
     db.query(query, [user_id], (err, result) => {
@@ -139,3 +158,4 @@ router.get("/", middleware, (req, res) => {
     });
 
 });
+module.exports = router;

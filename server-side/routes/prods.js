@@ -110,3 +110,4 @@ router.get("/filter", middleware, (req, res) => {
     );
 
 });
+module.exports = router;
